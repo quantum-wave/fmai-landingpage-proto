@@ -71,15 +71,18 @@
   @keyframes a-chip {0%,66%{opacity:0;transform:translateX(0)}70%{opacity:1}86%{opacity:1;transform:translateX(95px)}92%{opacity:0;transform:translateX(95px)}100%{opacity:0;transform:translateX(95px)}}
   @keyframes a-sync {0%,86%{opacity:0;transform:scale(.4)}93%{opacity:1;transform:scale(1.12)}97%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
 
-  .scene .scan{animation:a-scan 4.8s ease-in-out .4s 1 both}
-  .scene .r-top{animation:a-rtop 4.8s ease-in-out .4s 1 both}
-  .scene .r-mid{animation:a-rmid 4.8s ease-in-out .4s 1 both}
-  .scene .r-bot{animation:a-rbot 4.8s ease-in-out .4s 1 both}
-  .scene .match{animation:a-match 4.8s ease-in-out .4s 1 both}
-  .scene .hl{animation:a-hl 4.8s ease-in-out .4s 1 both}
-  .scene .hubchk{animation:a-chk 4.8s ease-in-out .4s 1 both;transform-origin:224px 206px}
-  .scene .chip{animation:a-chip 4.8s ease-in-out .4s 1 both}
-  .scene .sync{animation:a-sync 4.8s ease-in-out .4s 1 both;transform-origin:482px 192px}
+  .scene .scan,.scene .chip{opacity:0}
+  .scene .hubchk{transform-origin:224px 206px}
+  .scene .sync{transform-origin:482px 192px}
+  .scene.run .scan{animation:a-scan 4.8s ease-in-out .4s 1 both}
+  .scene.run .r-top{animation:a-rtop 4.8s ease-in-out .4s 1 both}
+  .scene.run .r-mid{animation:a-rmid 4.8s ease-in-out .4s 1 both}
+  .scene.run .r-bot{animation:a-rbot 4.8s ease-in-out .4s 1 both}
+  .scene.run .match{animation:a-match 4.8s ease-in-out .4s 1 both}
+  .scene.run .hl{animation:a-hl 4.8s ease-in-out .4s 1 both}
+  .scene.run .hubchk{animation:a-chk 4.8s ease-in-out .4s 1 both}
+  .scene.run .chip{animation:a-chip 4.8s ease-in-out .4s 1 both}
+  .scene.run .sync{animation:a-sync 4.8s ease-in-out .4s 1 both}
 
   @media (prefers-reduced-motion: reduce){
     .scene .scan,.scene .chip{display:none}
@@ -211,7 +214,7 @@
       <!-- HERO ANIMATION: lightweight CSS/SVG. AI scans a PO, a Delivery Slip, and an Invoice,
            runs the 3-way match, then syncs to your ERP. No Lottie runtime, no AEP dependency. -->
       <div class="hero-anim" aria-hidden="true">
-        <svg class="scene" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI scans a PO, delivery slip, and invoice, runs a 3-way match, and syncs to your ERP">
+        <svg class="scene run" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI reads a PO, delivery slip, and invoice, runs a 3-way match, and syncs to your ERP">
           <defs>
             <clipPath id="cpPO"><rect x="24" y="26" width="128" height="132" rx="10"/></clipPath>
             <clipPath id="cpDS"><rect x="196" y="26" width="128" height="132" rx="10"/></clipPath>
@@ -247,7 +250,7 @@
             <rect class="hl" x="376" y="80" width="112" height="15" rx="4" fill="none" stroke="#f5a623" stroke-width="2"/>
           </g>
 
-          <!-- AI SCAN SWEEP -->
+          <!-- AI READ SWEEP -->
           <g class="scan">
             <rect x="20" y="24" width="480" height="30" fill="#f5a623" opacity=".14"/>
             <rect x="20" y="52" width="480" height="3" rx="2" fill="#f5a623"/>
@@ -286,7 +289,7 @@
           </g>
         </svg>
         <div class="anim-cap">
-          <span>AI scan</span><span><b>3-way match</b></span><span>Synced to ERP</span>
+          <span>AI reads</span><span><b>3-way match</b></span><span>Synced to ERP</span>
         </div>
       </div>
 
@@ -296,7 +299,7 @@
         <li><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div><h3>The 3-way match runs itself</h3><p>POs, delivery slips, and invoices reconciled automatically, with price and quantity discrepancies flagged before you pay.</p></div></li>
         <li><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div><h3>Stop double-buying material</h3><p>Live inventory and backorder visibility, so crews stop reordering what is already sitting on the job.</p></div></li>
+          <div><h3>Level every quote, buy the best price</h3><p>AI reads each vendor quote and lines the bids up side by side, so you award the best price instead of re-keying PDFs line by line.</p></div></li>
       </ul>
       <div class="badges">
         <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/696e029424c75cae7425be44_Field%20Materials%20Best%20Custoemr%20Support%20badge.svg" alt="Software Advice, Best Customer Support">
@@ -358,7 +361,7 @@
   <div class="wrap">
     <div class="eyebrow">The problem</div>
     <h2 style="margin-top:12px;max-width:26ch">POs typed line by line. Invoices matched by hand. Material you already own, ordered twice.</h2>
-    <p class="lead">Right now POs get typed into Vista or Foundation line by line, by hand, and the same items get keyed again to pay the invoice. With no live inventory view, crews reorder material that is already sitting in the yard. And delivery slips never make it back to the office, so AP approves invoices against deliveries it cannot actually see.</p>
+    <p class="lead">Right now POs get typed by hand into Vista, Foundation, or whatever ERP you run, line by line, and the same items get keyed again to pay the invoice. With no live inventory view, crews reorder material that is already sitting in the yard. And delivery slips never make it back to the office, so AP approves invoices against deliveries it cannot actually see.</p>
     <div class="pain-grid">
       <div class="pcard"><h3>Line-by-line data entry</h3><p>Every PO and invoice keyed into the ERP by hand, one item at a time. Hours a week, gone.</p></div>
       <div class="pcard"><h3>The double-buy boneyard</h3><p>No live inventory view, so crews reorder what is already sitting on the job.</p></div>
@@ -374,9 +377,9 @@
     <h2 style="margin-top:12px;max-width:30ch">From invoice entry to a clean 3-way match, always in sync with your ERP.</h2>
     <div class="flow">
       <div class="step"><div class="n">1</div><h3>Enter invoices, no manual typing</h3><p>AI reads each invoice and enters it into your ERP for you, instead of someone keying it in line by line.</p></div>
-      <div class="step"><div class="n">2</div><h3>Receive quotes, level the bids</h3><p>Quotes land automatically by inbox monitoring. Level them side by side in the app and turn the best price into a PO.</p></div>
+      <div class="step"><div class="n">2</div><h3>Receive quotes, level the bids</h3><p>Quotes arrive automatically by inbox monitoring, or you upload the PDF. Level them side by side in the app and turn the best price into a PO.</p></div>
       <div class="step"><div class="n">3</div><h3>3-way match, discrepancies flagged</h3><p>The invoice is matched to the delivery slip and the PO, and any price or quantity discrepancies are flagged before you pay.</p></div>
-      <div class="step"><div class="n">4</div><h3>Always in sync with your ERP</h3><p>Every step stays in sync with Vista, Foundation, Sage, Spectrum, CMiC, QuickBooks, and Procore.</p></div>
+      <div class="step"><div class="n">4</div><h3>Always in sync with your ERP</h3><p>Every step stays in sync with your ERP, from Vista and Foundation to Sage, Spectrum, CMiC, QuickBooks, Procore, and more.</p></div>
     </div>
   </div>
 </section>
@@ -385,8 +388,8 @@
 <section class="block bg-navy platform">
   <div class="wrap">
     <div class="eyebrow">The platform</div>
-    <h2 style="margin-top:12px;max-width:26ch">One place for procurement and AP, from quote to ERP.</h2>
-    <p class="lead">From the first vendor quote to the final invoice, every step lives in one place, so nothing slips through the cracks and the office stops chasing paper.</p>
+    <h2 style="margin-top:12px;max-width:26ch">One place for procurement and AP, from the first RFQ to the final invoice.</h2>
+    <p class="lead">From the first RFQ to the final invoice, every step lives in one place, so nothing slips through the cracks and the office stops chasing paper.</p>
     <div class="cap-grid">
       <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#f5a623" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Invoices</h3><p>AI reads every invoice, runs the 3-way match against the PO and delivery slip, and enters it into your ERP, with no manual line-by-line typing.</p></div>
       <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="#f5a623" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="#f5a623" stroke-width="2" stroke-linecap="round"/></svg></div><h3>Purchase Orders</h3><p>Create itemized POs from a vendor quote or BOM in seconds, and validate pricing against buyouts. No data entry in your ERP.</p></div>
@@ -559,6 +562,10 @@
     ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){var e=document.getElementById(k);if(e)e.value=p.get(k)||'';});
     var r=document.getElementById('referrer');if(r)r.value=document.referrer||'';
     var l=document.getElementById('landing_page');if(l)l.value=location.pathname||'';})();
+  // Hero animation: plays on load, then replays every 50s (~45s rest) unless reduced-motion is set.
+  (function(){var s=document.querySelector('.scene');if(!s)return;
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    setInterval(function(){s.classList.remove('run');void s.offsetWidth;s.classList.add('run');},50000);})();
 </script>
 </body>
 </html>
