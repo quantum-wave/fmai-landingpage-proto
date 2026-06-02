@@ -414,7 +414,7 @@
       <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.6" stroke="#f5a623" stroke-width="2"/><circle cx="17" cy="18" r="1.6" stroke="#f5a623" stroke-width="2"/></svg></div><h3>Delivery Slips</h3><p>AI reads delivery slips and verifies them against the PO, so the office always knows what actually arrived.</p></div>
       <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 8l9-4 9 4-9 4-9-4zM3 8v8l9 4 9-4V8" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/></svg></div><h3>Inventory</h3><p>Track warehouse stock and on-hand material, and split orders between vendors and the warehouse, so you stop double-buying.</p></div>
       <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Receipts</h3><p>Capture and reconcile receipts to rein in rogue spending, with no data entry in your ERP.</p></div>
-      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 3v9M12 12l8-4.5M12 12l-8-4.5" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/></svg></div><h3>Prefabrication</h3><p>Turn the prefab BOM into orders automatically, and track every prefab order through to delivery.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 3v9M12 12l8-4.5M12 12l-8-4.5" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/></svg></div><h3>Prefab</h3><p>Turn the prefab BOM into orders automatically, and track every prefab order through to delivery.</p></div>
     </div>
   </div>
 </section>
@@ -554,7 +554,7 @@
     <details><summary>How quickly can we be running, and is it all or nothing?<span class="plus">+</span></summary>
       <p>It goes live in pieces. Most teams switch on invoice capture or PO entry first, watch the hours come back inside a couple of weeks, then layer in matching, RFQs, and inventory whenever they are ready. There is no year-long rollout.</p></details>
     <details><summary>Will the crews in the field actually adopt it?<span class="plus">+</span></summary>
-      <p>The office gets the payoff even when the field barely touches it. For the field team, it is as simple as a crew member snapping a photo of a slip, while the entry, matching, and coding happen back at the desk on their own. The AI even reads handwritten notes in Spanish, on paper that comes back crumpled and stained from the job site. And for crews that want to do more, the mobile app supports it, so there is nothing to force and nothing to train.</p></details>
+      <p>The office gets the payoff even when the field barely touches it. For the field team, it is as simple as a crew member snapping a photo of a slip, while the entry, matching, and coding happen back at the desk on their own. The AI even reads handwritten notes in Spanish, even on paper that&rsquo;s crumpled and stained from the job site. And for crews that want to do more, the mobile app supports it, so there is nothing to force and nothing to train.</p></details>
     <details><summary>What does the demo actually cover?<span class="plus">+</span></summary>
       <p>Thirty focused minutes on the parts you care about, whether that is AP and the 3-way match, PO entry, RFQs, or prefab, with no pitch. We run it on your own real documents, not pre-staged samples, so you see exactly how your POs, slips, and invoices would flow and where your current process bleeds time. No commitment either way.</p></details>
   </div>
@@ -590,7 +590,7 @@
       }
     });
   });
-  function caroScroll(dir){var t=document.getElementById('saysTrack');if(!t)return;var c=t.querySelector('.tile');var step=c?c.offsetWidth+22:360;t.scrollBy({left:dir*step,behavior:'smooth'});}
+  function caroScroll(dir){var t=document.getElementById('saysTrack');if(!t)return;var c=t.querySelector('.tile');var step=c?c.offsetWidth+22:360;var max=t.scrollWidth-t.clientWidth;var eps=4;if(dir>0&&t.scrollLeft>=max-eps){t.scrollTo({left:0,behavior:'smooth'});return;}if(dir<0&&t.scrollLeft<=eps){t.scrollTo({left:max,behavior:'smooth'});return;}t.scrollBy({left:dir*step,behavior:'smooth'});}
   // REFERENCE ONLY: real page clones the working /request-demo form + its UTM-capture script.
   (function(){var p=new URLSearchParams(location.search);
     ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){var e=document.getElementById(k);if(e)e.value=p.get(k)||'';});
