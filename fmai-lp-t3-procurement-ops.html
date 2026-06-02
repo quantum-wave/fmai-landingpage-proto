@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, follow">
+<title>Field Materials AI | PO entry, delivery tracking, and job inventory, automated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1f2b47; --navy-tile:#27345a; --ink:#1f2b47;
+    --orange:#f5a623; --orange-h:#e2950f;
+    --sky:#a8cbef; --tint:#eef4fc; --gray:#f4f6f9;
+    --body:#5b6776; --muted:#8a94a3; --line:#e4e8ef; --bg:#ffffff; --white:#fff;
+    --font:'Figtree',system-ui,-apple-system,sans-serif;
+    --maxw:1180px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--body);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  h1,h2,h3{color:var(--ink);font-weight:700;line-height:1.12;letter-spacing:-.01em}
+  h1{font-size:clamp(2.1rem,4.4vw,3.25rem)}
+  h2{font-size:clamp(1.7rem,3.2vw,2.4rem)}
+  h3{font-size:1.12rem;font-weight:700}
+  p{font-size:1.02rem}
+  .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+  .btn{font-family:var(--font);font-weight:700;font-size:.92rem;letter-spacing:.04em;text-transform:uppercase;
+    background:var(--orange);color:#fff;border:none;padding:15px 30px;border-radius:7px;cursor:pointer;
+    display:inline-block;text-decoration:none;transition:background .15s,transform .15s}
+  .btn:hover{background:var(--orange-h);transform:translateY(-1px)}
+  .note{font-size:.72rem;background:#fff4e2;border:1px dashed var(--orange);color:#9a6500;
+    padding:3px 9px;border-radius:3px;display:inline-block;margin-bottom:12px;letter-spacing:.02em;text-transform:none;font-weight:600}
+
+  .bg-gray{background:var(--gray)}
+  .bg-tint{background:var(--tint)}
+  .bg-navy{background:var(--navy)}
+  .bg-sky{background:var(--sky)}
+
+  /* HERO */
+  .hero{padding:56px 0 66px;background:#fff}
+  .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start}
+  .hero h1{margin:14px 0 22px}
+  .vp{list-style:none;display:flex;flex-direction:column;gap:14px;max-width:30rem}
+  .vp li{display:flex;gap:13px;align-items:flex-start}
+  .vp .ic{flex:none;width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .vp h3{margin-bottom:1px;font-size:1.02rem}
+  .vp p{font-size:.93rem;color:var(--body)}
+  .badges{display:flex;gap:18px;margin-top:30px;align-items:center}
+  .badges img{height:84px;width:auto}
+
+  /* HERO ANIMATION PANEL (T3 addition, stays inside the system) */
+  .hero-anim{margin:0 0 24px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fbfdff,#f2f6fb);
+    box-shadow:0 18px 44px -30px rgba(31,43,71,.4);overflow:hidden}
+  .hero-anim svg{display:block;width:100%;height:auto}
+  .anim-cap{display:flex;justify-content:space-between;gap:8px;padding:10px 16px 13px;border-top:1px solid var(--line)}
+  .anim-cap span{font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .anim-cap span b{color:var(--ink)}
+
+  /* keyframe scene: AI scans PO + Delivery Slip + Invoice -> 3-way match -> sync to ERP (plays once, holds end state) */
+  .scene *{transform-box:fill-box}
+  @keyframes a-scan {0%{opacity:0;transform:translateY(0)}6%{opacity:1}30%{opacity:1;transform:translateY(132px)}40%{opacity:0;transform:translateY(132px)}100%{opacity:0;transform:translateY(132px)}}
+  @keyframes a-rtop {0%,9%{opacity:0}15%{opacity:1}100%{opacity:1}}
+  @keyframes a-rmid {0%,17%{opacity:0}23%{opacity:1}100%{opacity:1}}
+  @keyframes a-rbot {0%,25%{opacity:0}31%{opacity:1}100%{opacity:1}}
+  @keyframes a-match{0%,40%{opacity:0}48%{opacity:1}100%{opacity:1}}
+  @keyframes a-hl   {0%,50%{opacity:0}57%{opacity:1}100%{opacity:1}}
+  @keyframes a-chk  {0%,58%{opacity:0;transform:scale(.3)}66%{opacity:1;transform:scale(1.15)}72%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+  @keyframes a-chip {0%,66%{opacity:0;transform:translateX(0)}70%{opacity:1}86%{opacity:1;transform:translateX(95px)}92%{opacity:0;transform:translateX(95px)}100%{opacity:0;transform:translateX(95px)}}
+  @keyframes a-sync {0%,86%{opacity:0;transform:scale(.4)}93%{opacity:1;transform:scale(1.12)}97%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+
+  .scene .scan{animation:a-scan 4.8s ease-in-out .4s 1 both}
+  .scene .r-top{animation:a-rtop 4.8s ease-in-out .4s 1 both}
+  .scene .r-mid{animation:a-rmid 4.8s ease-in-out .4s 1 both}
+  .scene .r-bot{animation:a-rbot 4.8s ease-in-out .4s 1 both}
+  .scene .match{animation:a-match 4.8s ease-in-out .4s 1 both}
+  .scene .hl{animation:a-hl 4.8s ease-in-out .4s 1 both}
+  .scene .hubchk{animation:a-chk 4.8s ease-in-out .4s 1 both;transform-origin:224px 206px}
+  .scene .chip{animation:a-chip 4.8s ease-in-out .4s 1 both}
+  .scene .sync{animation:a-sync 4.8s ease-in-out .4s 1 both;transform-origin:482px 192px}
+
+  @media (prefers-reduced-motion: reduce){
+    .scene .scan,.scene .chip{display:none}
+    .scene .r-top,.scene .r-mid,.scene .r-bot,.scene .hl,.scene .match,.scene .hubchk,.scene .sync{animation:none;opacity:1;transform:none}
+  }
+
+  /* FORM CARD */
+  .card{background:var(--navy);border-radius:18px;padding:32px 30px;box-shadow:0 30px 70px -34px rgba(31,43,71,.55)}
+  .card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:#fff}
+  .card-top h2{color:#fff;font-size:1.65rem}
+  .card-top img{height:30px}
+  .card .csub{color:#aeb9cc;font-size:.9rem;margin-bottom:20px}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .fld{margin-bottom:13px}
+  .fld.full{grid-column:1/-1}
+  .fld label{display:block;color:#fff;font-size:.82rem;font-weight:600;margin-bottom:6px}
+  .fld label .req{color:var(--orange)}
+  .fld input,.fld select{width:100%;background:#fff;border:1px solid #d7deea;border-radius:6px;padding:11px 12px;
+    color:#1f2b47;font-family:var(--font);font-size:.95rem}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,166,35,.25)}
+  .captcha{background:#f9f9f9;border:1px solid #d3d3d3;border-radius:4px;padding:11px 14px;display:flex;align-items:center;
+    gap:11px;margin:6px 0 16px;max-width:300px}
+  .captcha .box{width:24px;height:24px;border:2px solid #c1c1c1;border-radius:3px;background:#fff;flex:none}
+  .captcha span{font-size:.82rem;color:#3c4043}
+  .captcha .rc{margin-left:auto;text-align:center;color:#9aa0a6;font-size:.55rem;line-height:1.2}
+  .card .btn{width:100%;text-align:center}
+  .reassure{margin-top:14px;color:#9fb0c9;font-size:.78rem;text-align:center}
+
+  .strip{padding:50px 0;text-align:center}
+  .strip .title{color:var(--ink);font-weight:700;font-size:1.35rem;margin-bottom:30px}
+  .logos{display:grid;grid-template-columns:repeat(4,1fr);gap:34px 24px;align-items:center;justify-items:center}
+  .logos img{max-height:60px;max-width:170px;width:auto;object-fit:contain}
+
+  section.block{padding:78px 0}
+  .center{text-align:center}
+  .lead{font-size:1.1rem;color:var(--body);max-width:64ch;margin-top:16px}
+
+  .pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:42px}
+  .pcard{background:#fff;border:1px solid var(--line);border-top:3px solid var(--orange);border-radius:9px;
+    padding:26px 24px;box-shadow:0 12px 30px -20px rgba(31,43,71,.25)}
+  .pcard h3{margin-bottom:9px}
+  .pcard p{font-size:.96rem;color:var(--body)}
+
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:44px}
+  .step .n{font-weight:800;font-size:2.1rem;color:var(--orange);line-height:1}
+  .step h3{margin:12px 0 7px}
+  .step p{font-size:.93rem;color:var(--body)}
+
+  .platform h2,.platform .lead{color:#fff}
+  .platform .lead{color:#c2cbdb}
+  .cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:42px}
+  .cap{background:var(--navy-tile);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:24px 22px}
+  .cap .ci{width:38px;height:38px;border-radius:9px;background:rgba(245,166,35,.15);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .cap h3{color:#fff;font-size:1.02rem;margin-bottom:6px}
+  .cap p{color:#aeb9cc;font-size:.88rem;line-height:1.5}
+
+  .erp .erp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:28px}
+  .erp .chip{background:#fff;border:1px solid var(--line);border-radius:10px;height:74px;display:flex;
+    align-items:center;justify-content:center;padding:12px;min-width:0}
+  .erp .chip img{max-height:38px;max-width:120px;object-fit:contain}
+
+  .feat{display:grid;grid-template-columns:.8fr 1.2fr;gap:34px;align-items:center;
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:40px 38px;box-shadow:0 18px 44px -28px rgba(31,43,71,.3)}
+  .feat .big{font-weight:800;font-size:6rem;color:var(--orange);line-height:.9}
+  .feat .big small{display:block;font-size:1rem;color:var(--body);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-top:8px}
+  .feat blockquote{font-size:1.3rem;color:var(--ink);font-weight:600;line-height:1.45;margin-bottom:16px}
+  .feat .who{font-size:.92rem;color:var(--body)}
+  .feat .who b{color:var(--ink)}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin:34px auto 0;text-align:center;max-width:620px}
+  .stat .num{font-weight:800;font-size:2.7rem;color:var(--ink)}
+  .stat .cap2{font-size:.86rem;color:var(--body);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+
+  .says{padding:74px 0}
+  .says h2{text-align:center;margin-bottom:34px}
+  .carousel{position:relative}
+  .says-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+    padding:6px 2px 14px;scrollbar-width:none;-ms-overflow-style:none}
+  .says-track::-webkit-scrollbar{display:none}
+  .tile{flex:0 0 calc((100% - 44px)/3);scroll-snap-align:start;background:#fff;border-radius:12px;padding:26px 24px;
+    box-shadow:0 16px 36px -26px rgba(31,43,71,.4);display:flex;flex-direction:column}
+  .tile .tl{height:42px;margin-bottom:16px;display:flex;align-items:center}
+  .tile .tl img{max-height:42px;max-width:150px;object-fit:contain}
+  .tile .stars{color:var(--orange);letter-spacing:3px;font-size:1.05rem;margin-bottom:12px}
+  .tile p{font-size:.9rem;color:#46505d;line-height:1.55}
+  .tile .who{margin-top:14px;font-size:.82rem;color:var(--muted);font-weight:600}
+  .caro-nav{display:flex;justify-content:center;gap:14px;margin-top:24px}
+  .caro-btn{width:46px;height:46px;border-radius:50%;border:none;background:var(--navy);color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s}
+  .caro-btn:hover{background:var(--orange);transform:translateY(-1px)}
+
+  .faq .wrap{max-width:850px}
+  details{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:18px;
+    padding:22px 2px;font-weight:700;font-size:1.12rem;color:var(--ink)}
+  summary::-webkit-details-marker{display:none}
+  summary .plus{color:var(--orange);font-size:1.6rem;font-weight:400;transition:transform .2s}
+  details[open] summary .plus{transform:rotate(45deg)}
+  details p{padding:0 2px 22px;color:var(--body);max-width:72ch}
+
+  .close{text-align:center;padding:84px 0}
+  .close h2{color:#fff;max-width:22ch;margin:14px auto 16px}
+  .close p{color:#c2cbdb;max-width:56ch;margin:0 auto 30px}
+  .close .cstat{color:#8995ac;font-size:.85rem;margin-top:20px}
+
+  footer{background:var(--navy);color:#cfd8e6;border-top:1px solid rgba(255,255,255,.08);padding:34px 0 30px;text-align:center}
+  footer img{height:34px;margin-bottom:14px}
+  footer .ft{color:#8995ac;font-size:.82rem}
+  footer a{color:#aeb9cc;text-decoration:none;margin:0 8px}
+  .logo-fb{color:inherit;opacity:.85;font-weight:700;font-size:.85rem;white-space:nowrap}
+
+  @media(max-width:880px){
+    .hero-grid,.feat{grid-template-columns:1fr;gap:36px}
+    .pain-grid,.flow{grid-template-columns:1fr}
+    .tile{flex:0 0 82%}
+    .logos,.cap-grid{grid-template-columns:repeat(2,1fr)}
+    .feat .big{font-size:4.4rem}
+  }
+  @media(max-width:520px){ .frow{grid-template-columns:1fr} .cap-grid{grid-template-columns:1fr} .stats{grid-template-columns:1fr} .anim-cap{flex-wrap:wrap} }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Automate construction PO and invoice processing with AI agents</h1>
+
+      <!-- HERO ANIMATION: lightweight CSS/SVG. AI scans a PO, a Delivery Slip, and an Invoice,
+           runs the 3-way match, then syncs to your ERP. No Lottie runtime, no AEP dependency. -->
+      <div class="hero-anim" aria-hidden="true">
+        <svg class="scene" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI scans a PO, delivery slip, and invoice, runs a 3-way match, and syncs to your ERP">
+          <defs>
+            <clipPath id="cpPO"><rect x="24" y="26" width="128" height="132" rx="10"/></clipPath>
+            <clipPath id="cpDS"><rect x="196" y="26" width="128" height="132" rx="10"/></clipPath>
+            <clipPath id="cpINV"><rect x="368" y="26" width="128" height="132" rx="10"/></clipPath>
+          </defs>
+
+          <!-- THREE SOURCE DOCS -->
+          <g class="doc">
+            <rect x="24" y="26" width="128" height="132" rx="10" fill="#fff" stroke="#e4e8ef" stroke-width="2"/>
+            <g clip-path="url(#cpPO)"><rect x="24" y="26" width="128" height="24" fill="#1f2b47"/></g>
+            <text x="88" y="42" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="#fff" font-weight="700" letter-spacing=".06em">PO</text>
+            <g class="r-top"><rect x="36" y="62" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="108" y="62" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-mid"><rect x="36" y="84" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="108" y="84" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-bot"><rect x="36" y="106" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="108" y="106" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <rect class="hl" x="32" y="80" width="112" height="15" rx="4" fill="none" stroke="#f5a623" stroke-width="2"/>
+          </g>
+          <g class="doc">
+            <rect x="196" y="26" width="128" height="132" rx="10" fill="#fff" stroke="#e4e8ef" stroke-width="2"/>
+            <g clip-path="url(#cpDS)"><rect x="196" y="26" width="128" height="24" fill="#1f2b47"/></g>
+            <text x="260" y="42" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="#fff" font-weight="700" letter-spacing=".04em">DELIVERY SLIP</text>
+            <g class="r-top"><rect x="208" y="62" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="280" y="62" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-mid"><rect x="208" y="84" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="280" y="84" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-bot"><rect x="208" y="106" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="280" y="106" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <rect class="hl" x="204" y="80" width="112" height="15" rx="4" fill="none" stroke="#f5a623" stroke-width="2"/>
+          </g>
+          <g class="doc">
+            <rect x="368" y="26" width="128" height="132" rx="10" fill="#fff" stroke="#e4e8ef" stroke-width="2"/>
+            <g clip-path="url(#cpINV)"><rect x="368" y="26" width="128" height="24" fill="#1f2b47"/></g>
+            <text x="432" y="42" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="#fff" font-weight="700" letter-spacing=".06em">INVOICE</text>
+            <g class="r-top"><rect x="380" y="62" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="452" y="62" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-mid"><rect x="380" y="84" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="452" y="84" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <g class="r-bot"><rect x="380" y="106" width="58" height="7" rx="3" fill="#c9d2e0"/><rect x="452" y="106" width="32" height="7" rx="3" fill="#dde3ee"/></g>
+            <rect class="hl" x="376" y="80" width="112" height="15" rx="4" fill="none" stroke="#f5a623" stroke-width="2"/>
+          </g>
+
+          <!-- AI SCAN SWEEP -->
+          <g class="scan">
+            <rect x="20" y="24" width="480" height="30" fill="#f5a623" opacity=".14"/>
+            <rect x="20" y="52" width="480" height="3" rx="2" fill="#f5a623"/>
+            <rect x="472" y="44" width="34" height="20" rx="5" fill="#f5a623"/>
+            <text x="489" y="58" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="#fff" font-weight="800">AI</text>
+          </g>
+
+          <!-- 3-WAY MATCH -->
+          <g class="match">
+            <path d="M88 158 Q88 188 224 204" fill="none" stroke="#9fb0c9" stroke-width="1.6" opacity=".6"/>
+            <path d="M260 158 Q250 186 224 204" fill="none" stroke="#9fb0c9" stroke-width="1.6" opacity=".6"/>
+            <path d="M432 158 Q432 188 224 204" fill="none" stroke="#9fb0c9" stroke-width="1.6" opacity=".6"/>
+            <path d="M242 206 L330 206" fill="none" stroke="#c9d2e0" stroke-width="2" stroke-dasharray="3 4"/>
+            <circle cx="224" cy="206" r="18" fill="#1f2b47"/>
+            <text x="224" y="244" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="#f5a623" font-weight="700" letter-spacing=".1em">3-WAY MATCH</text>
+          </g>
+          <g class="hubchk">
+            <path d="M215 206 l6 6 l11 -13" fill="none" stroke="#f5a623" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+
+          <!-- ERP TILE -->
+          <g class="doc">
+            <rect x="330" y="188" width="160" height="40" rx="9" fill="#fff" stroke="#e4e8ef" stroke-width="2"/>
+            <ellipse cx="350" cy="201" rx="9" ry="3.4" fill="none" stroke="#1f2b47" stroke-width="1.6"/>
+            <path d="M341 201 v9 a9 3.4 0 0 0 18 0 v-9" fill="none" stroke="#1f2b47" stroke-width="1.6"/>
+            <text x="368" y="214" font-family="Figtree,sans-serif" font-size="14" fill="#1f2b47" font-weight="800">ERP</text>
+          </g>
+          <g class="chip">
+            <rect x="232" y="198" width="22" height="16" rx="4" fill="#f5a623"/>
+            <path d="M238 206 l3 3 l6 -7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g class="sync">
+            <circle cx="482" cy="192" r="11" fill="#eaf6ea" stroke="#3da35d" stroke-width="2"/>
+            <path d="M476 192 l4 4 l8 -9" fill="none" stroke="#3da35d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="410" y="246" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="#3da35d" font-weight="700">Synced</text>
+          </g>
+        </svg>
+        <div class="anim-cap">
+          <span>AI scan</span><span><b>3-way match</b></span><span>Synced to ERP</span>
+        </div>
+      </div>
+
+      <ul class="vp">
+        <li><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><h3>End manual PO data entry</h3><p>Itemized POs flow straight into Vista, Foundation, or Sage, with no line-by-line keying into your ERP.</p></div></li>
+        <li><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><h3>The 3-way match runs itself</h3><p>POs, delivery slips, and invoices reconciled automatically, with price and quantity discrepancies flagged before you pay.</p></div></li>
+        <li><span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div><h3>Stop double-buying material</h3><p>Live inventory and backorder visibility, so crews stop reordering what is already sitting on the job.</p></div></li>
+      </ul>
+      <div class="badges">
+        <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/696e029424c75cae7425be44_Field%20Materials%20Best%20Custoemr%20Support%20badge.svg" alt="Software Advice, Best Customer Support">
+        <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/696e7749ed9fb259b39bfeec_users-love-us.svg" alt="G2, Users Love Us">
+      </div>
+    </div>
+
+    <!-- ATTRIBUTION REQUIREMENT (build note): replace this whole form with a CLONE of the working
+         /request-demo form (7 hidden UTM fields + HubSpot mapping + UTM-capture script that survives
+         LinkedIn in-app stripping). Depends on the ads passing utm_term=tier3_procurement_ops. -->
+    <div class="card" id="demo">
+      <div class="card-top">
+        <h2>Get a Demo</h2>
+        <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/68ed5be8feef1d10be0ac5d3_FM%20logo.svg" alt="Field Materials AI">
+      </div>
+      <p class="csub">A 30-minute walkthrough on your own POs and delivery slips.</p>
+      <form onsubmit="return false;">
+        <div class="frow">
+          <div class="fld"><label>First name <span class="req">*</span></label><input type="text" placeholder="Your first name"></div>
+          <div class="fld"><label>Last name <span class="req">*</span></label><input type="text" placeholder="Your last name"></div>
+          <div class="fld"><label>Company <span class="req">*</span></label><input type="text" placeholder="Company name"></div>
+          <div class="fld"><label>Company Email <span class="req">*</span></label><input type="email" placeholder="company@email.com"></div>
+        </div>
+        <div class="fld full"><label>Phone</label><input type="tel" placeholder="Your phone"></div>
+        <div class="fld full"><label>Select Trade</label>
+          <select><option>Select Trade</option><option>Civil / Underground Utilities</option><option>Concrete</option>
+            <option>Electrical</option><option>General Contractors</option><option>Insulation, Fireproofing, Firestopping</option>
+            <option>Masonry</option><option>Mechanical: HVAC/Plumbing</option><option>Roofing</option>
+            <option>Wall and Ceiling</option><option>Other</option></select></div>
+        <input type="hidden" id="utm_source"><input type="hidden" id="utm_medium"><input type="hidden" id="utm_campaign">
+        <input type="hidden" id="utm_term"><input type="hidden" id="utm_content"><input type="hidden" id="referrer"><input type="hidden" id="landing_page">
+        <div class="captcha"><span class="box"></span><span>I'm not a robot</span><span class="rc">reCAPTCHA<br>Privacy &middot; Terms</span></div>
+        <button class="btn" type="submit">Schedule My Demo</button>
+        <div class="reassure">30 minutes &middot; see your own POs and invoices &middot; no obligation &middot; not a rip-and-replace</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUSTED BY (gray) ============ -->
+<div class="strip bg-gray">
+  <div class="wrap">
+    <div class="title">Trusted by Top Contractors</div>
+    <div class="logos">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/6984e688669c7f449ea8ecae_DSI_logo_centered.webp" alt="Dynamic Systems">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/692f6a5e64c9501b3ef1c7b0_Worth%20%26%20Company.webp" alt="Worth & Company">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ed3da02c53eaf7795a06_Frame%20830.webp" alt="Teichert">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ed0f636e7424a7eea3c6_Frame%20827.webp" alt="McMillan Electric">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ecff1fb86815376f20ca_Frame%20826.webp" alt="Bruce Allen">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ebf38740c9ca3a6f30cf_Frame%20831.webp" alt="McAlvain Construction">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ebd96a8572c8ad6a50f5_Frame%20830.webp" alt="Swinerton">
+      <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ebce3ceff40395926671_Frame%20829.webp" alt="Silicon Valley Mechanical">
+    </div>
+  </div>
+</div>
+
+<!-- ============ PROBLEM (white) ============ -->
+<section class="block">
+  <div class="wrap">
+    <div class="eyebrow">The problem</div>
+    <h2 style="margin-top:12px;max-width:26ch">POs typed line by line. Invoices matched by hand. Material you already own, ordered twice.</h2>
+    <p class="lead">Right now POs get typed into Vista or Foundation line by line, by hand, and the same items get keyed again to pay the invoice. With no live inventory view, crews reorder material that is already sitting in the yard. And delivery slips never make it back to the office, so AP approves invoices against deliveries it cannot actually see.</p>
+    <div class="pain-grid">
+      <div class="pcard"><h3>Line-by-line data entry</h3><p>Every PO and invoice keyed into the ERP by hand, one item at a time. Hours a week, gone.</p></div>
+      <div class="pcard"><h3>The double-buy boneyard</h3><p>No live inventory view, so crews reorder what is already sitting on the job.</p></div>
+      <div class="pcard"><h3>The disappearing delivery ticket</h3><p>Slips never make it back to the office, so AP approves invoices blind against what actually arrived.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS (soft blue) ============ -->
+<section class="block bg-tint">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 style="margin-top:12px;max-width:30ch">From invoice entry to a clean 3-way match, always in sync with your ERP.</h2>
+    <div class="flow">
+      <div class="step"><div class="n">1</div><h3>Enter invoices, no manual typing</h3><p>AI reads each invoice and enters it into your ERP for you, instead of someone keying it in line by line.</p></div>
+      <div class="step"><div class="n">2</div><h3>Receive quotes, level the bids</h3><p>Quotes land automatically by inbox monitoring. Level them side by side in the app and turn the best price into a PO.</p></div>
+      <div class="step"><div class="n">3</div><h3>3-way match, discrepancies flagged</h3><p>The invoice is matched to the delivery slip and the PO, and any price or quantity discrepancies are flagged before you pay.</p></div>
+      <div class="step"><div class="n">4</div><h3>Always in sync with your ERP</h3><p>Every step stays in sync with Vista, Foundation, Sage, Spectrum, CMiC, QuickBooks, and Procore.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLATFORM (navy) ============ -->
+<section class="block bg-navy platform">
+  <div class="wrap">
+    <div class="eyebrow">The platform</div>
+    <h2 style="margin-top:12px;max-width:26ch">One place for procurement and AP, from quote to ERP.</h2>
+    <p class="lead">From the first vendor quote to the final invoice, every step lives in one place, so nothing slips through the cracks and the office stops chasing paper.</p>
+    <div class="cap-grid">
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#f5a623" stroke-width="2"/><path d="M8 12l2.5 2.5L16 9" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Invoices</h3><p>AI reads every invoice, runs the 3-way match against the PO and delivery slip, and enters it into your ERP, with no manual line-by-line typing.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="#f5a623" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="#f5a623" stroke-width="2" stroke-linecap="round"/></svg></div><h3>Purchase Orders</h3><p>Create itemized POs from a vendor quote or BOM in seconds, and validate pricing against buyouts. No data entry in your ERP.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 6h10M4 12h16M4 18h7" stroke="#f5a623" stroke-width="2" stroke-linecap="round"/><circle cx="18" cy="6" r="2" stroke="#f5a623" stroke-width="2"/></svg></div><h3>RFQs &amp; Bid Leveling</h3><p>Quotes land automatically by inbox monitoring. Level the bids side by side in a few clicks and turn the winner into a PO.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19h16M8 15l3-4 3 3 5-7" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Pricing Intelligence</h3><p>Track total spend by vendor and by material, and watch price changes over time.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.6" stroke="#f5a623" stroke-width="2"/><circle cx="17" cy="18" r="1.6" stroke="#f5a623" stroke-width="2"/></svg></div><h3>Delivery Slips</h3><p>AI reads delivery slips and verifies them against the PO, so the office always knows what actually arrived.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 8l9-4 9 4-9 4-9-4zM3 8v8l9 4 9-4V8" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/></svg></div><h3>Inventory</h3><p>Track warehouse stock and on-hand material, and split orders between vendors and the warehouse, so you stop double-buying.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6" stroke="#f5a623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Receipts</h3><p>Capture and reconcile receipts to rein in rogue spending, with no data entry in your ERP.</p></div>
+      <div class="cap"><div class="ci"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 3v9M12 12l8-4.5M12 12l-8-4.5" stroke="#f5a623" stroke-width="2" stroke-linejoin="round"/></svg></div><h3>Prefabrication</h3><p>Turn the prefab BOM into orders automatically, and track every prefab order through to delivery.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKS WITH YOUR ERP (gray) ============ -->
+<section class="erp block bg-gray">
+  <div class="wrap center">
+    <div class="eyebrow">No rip-and-replace</div>
+    <h2 style="margin-top:12px">Works with Your ERP</h2>
+    <div class="erp-grid">
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e6e857e7c2e1f970baa41_sage-intacct.webp" alt="Sage Intacct"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e7190ec99043ef9fd2b44_spectrum-logo.webp" alt="Viewpoint Spectrum"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e71015b65abb9ca5df54e_procore-logo.webp" alt="Procore"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e6f3306addba7d39b08a2_cmic-logo.webp" alt="CMiC"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e6e4ed08e84f78dd20f53_sage300-logo.webp" alt="Sage 300 CRE"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e714348ea0b3a11fd41e3_vista-logo.webp" alt="Viewpoint Vista"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e6f7d13513b178944e2c1_quickbooks-logo.webp" alt="QuickBooks Online"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e6c9bf21450e890dab38c_sage100-logo.webp" alt="Sage 100 Contractor"></div>
+      <div class="chip"><img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/695e71fe9621dc6989625b98_foundation-logo.webp" alt="Foundation"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEEP PROOF (white) ============ -->
+<section class="block">
+  <div class="wrap">
+    <div class="eyebrow">Proof</div>
+    <h2 style="margin:12px 0 28px">Procurement teams got their day back.</h2>
+    <div class="feat">
+      <div class="big">30&#8594;2<small>Minutes per PO at KRS Electric</small></div>
+      <div>
+        <blockquote>"We went from 30 minutes per PO to just one or two. Now it's a 3-click process instead of 20. The guys love it."</blockquote>
+        <div class="who"><b>Martha Peine</b>, Head of Accounting &amp; Procurement, KRS Electric</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">90%</div><div class="cap2">Less time spent processing quotes, POs, and invoices</div></div>
+      <div class="stat"><div class="num">5-10%</div><div class="cap2">Material cost savings</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT OUR CUSTOMERS SAY (sky) ============ -->
+<section class="says bg-sky">
+  <div class="wrap">
+    <h2>What Our Customers Say</h2>
+    <div class="carousel">
+      <div class="says-track" id="saysTrack">
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/697a6d4695cbab86b0fc0988_DSI%20Logo.webp" alt="Dynamic Systems"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"Field Materials has streamlined our procurement process by engaging our field team members and eliminating the need for three different systems. It has also saved our Purchasing department countless hours."</p>
+          <div class="who">Dynamic Systems</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/695f7ba29ee4e067d646236c_gcuc-logo.webp" alt="Gulf Coast Utility Contractors"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"What once required multiple steps, double entry, and chasing slips of paper is now managed seamlessly in one platform with a fraction of the time spent. Field Materials virtually eliminated manual data entry."</p>
+          <div class="who">Gulf Coast Utility Contractors</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ebf38740c9ca3a6f30cf_Frame%20831.webp" alt="McAlvain Construction"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"This system gives me control in the middle of all the daily chaos. Data entry used to be a huge time suck. Now the PO sync is automatic. That alone has saved me hours every week."</p>
+          <div class="who">Bret Gibleau, Equipment Manager &middot; McAlvain Construction</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ebd96a8572c8ad6a50f5_Frame%20830.webp" alt="Swinerton"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"If I know real-time what we've ordered, what we've received, and what we've been invoiced, I can make informed decisions weeks or even months ahead."</p>
+          <div class="who">Irving Corrales, Project Executive &middot; Swinerton</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/692628b0c5b5e36729830f44_Dempsey%20construction%20logo.webp" alt="Dempsey Construction"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"Field Materials simplifies the entire procurement workflow. It aligns the field and office teams by showing order status and delivery updates, which is invaluable for maintaining cohesion."</p>
+          <div class="who">Dempsey Construction</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/695f7b859eaea05b82d31177_teichart-logo.webp" alt="Teichert"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"I can get the same amount of work done in 4 hours that would have taken 4 days before. Instead of jumping between Viewpoint Vista, spreadsheets, and emails, I now see everything on one screen."</p>
+          <div class="who">Armando Lopez &middot; Teichert</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/69333453125cd30f85cf425f_Suirside%20Construction%20logo.webp" alt="Suirside Construction"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"Field Materials integrates seamlessly with Procore to eliminate the manual process of checking invoices against orders. The mobile app is fantastic, easy and quick for our site managers to submit orders."</p>
+          <div class="who">Suirside Construction</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c322b765f82a09a972aa5e_pbc.webp" alt="Paradigm Building Contractors"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"The user interface is really friendly and easy to navigate. What really stands out is the traceability. We can track everything we need without any hassle. This is now a tool we use every day."</p>
+          <div class="who">Paradigm Building Contractors</div>
+        </div>
+        <div class="tile">
+          <div class="tl"><img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/68c2ed0f636e7424a7eea3c6_Frame%20827.webp" alt="McMillan Electric"></div>
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <p>"We've saved at least 50% of the time we used to spend on invoices. We're no longer printing everything out or typing invoices manually. It just flows into the system."</p>
+          <div class="who">McMillan Electric</div>
+        </div>
+      </div>
+      <div class="caro-nav">
+        <button class="caro-btn" aria-label="Previous testimonials" onclick="caroScroll(-1)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="caro-btn" aria-label="Next testimonials" onclick="caroScroll(1)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ (white) - UNIQUE COPY, ops-led ============ -->
+<section class="block faq">
+  <div class="wrap">
+    <div class="eyebrow">Good to know</div>
+    <h2 style="margin:12px 0 14px">What procurement and AP teams ask before they switch.</h2>
+    <details open><summary>Does this rip out our ERP?<span class="plus">+</span></summary>
+      <p>No. Field Materials runs on top of Viewpoint Vista, Spectrum, Foundation, Sage, CMiC, QuickBooks, and Procore. It straightens out purchasing, receiving, and the 3-way match before anything lands in accounting, so the system you already pay for does more, not less.</p></details>
+    <details><summary>How quickly can we be running, and is it all or nothing?<span class="plus">+</span></summary>
+      <p>It goes live in pieces. Most teams switch on invoice capture or PO entry first, watch the hours come back inside a couple of weeks, then layer in matching, RFQs, and inventory whenever they are ready. There is no year-long rollout.</p></details>
+    <details><summary>Will the crews in the field actually adopt it?<span class="plus">+</span></summary>
+      <p>The office gets the payoff even when the field barely touches it. At most a crew member snaps one photo of a slip, while the entry, matching, and coding happen back at the desk on their own. Spanish and faded receipts are read automatically, so there is nothing to train.</p></details>
+    <details><summary>What does the demo actually cover?<span class="plus">+</span></summary>
+      <p>Thirty focused minutes on your own POs, invoices, and slips, with no pitch. You will watch a real invoice get entered, matched to its PO, and synced to your ERP, and most people spot exactly where their current process bleeds time. No commitment either way.</p></details>
+  </div>
+</section>
+
+<!-- ============ CLOSE (navy) ============ -->
+<section class="close bg-navy">
+  <div class="wrap">
+    <div class="eyebrow">End the chase</div>
+    <h2>Every week you wait, the paper chase wins.</h2>
+    <p>Your crew is still typing POs and chasing delivery slips. See how fast it gets, in a 30-minute walkthrough on your own POs and invoices.</p>
+    <a href="#demo" class="btn">Schedule My Demo</a>
+    <div class="cstat">KRS Electric went from 30 minutes per PO to under 2. Robertson Group sees every open PO and outstanding line item at a glance.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/68ed5be8feef1d10be0ac5d3_FM%20logo.svg" alt="Field Materials AI">
+    <div class="ft">&copy; 2026, Field Materials, Inc. &nbsp;&middot;&nbsp; <a href="#">Privacy Policy</a> <a href="#">Terms of use</a><br>
+      <span style="font-size:.72rem;color:#6b7790">Mockup for review &middot; T3 Procurement / Ops variant &middot; not published</span></div>
+  </div>
+</footer>
+
+<script>
+  // Logo fallback: the in-chat preview sandbox blocks external images, so any image that fails to load
+  // is swapped for a styled text label. The real CDN URLs still render in a normal browser and in Webflow.
+  window.addEventListener('load',function(){
+    document.querySelectorAll('img').forEach(function(img){
+      if(img.complete && img.naturalWidth===0){
+        var s=document.createElement('span'); s.className='logo-fb'; s.textContent=img.alt||'';
+        if(img.parentNode) img.parentNode.replaceChild(s,img);
+      }
+    });
+  });
+  function caroScroll(dir){var t=document.getElementById('saysTrack');if(!t)return;var c=t.querySelector('.tile');var step=c?c.offsetWidth+22:360;t.scrollBy({left:dir*step,behavior:'smooth'});}
+  // REFERENCE ONLY: real page clones the working /request-demo form + its UTM-capture script.
+  (function(){var p=new URLSearchParams(location.search);
+    ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){var e=document.getElementById(k);if(e)e.value=p.get(k)||'';});
+    var r=document.getElementById('referrer');if(r)r.value=document.referrer||'';
+    var l=document.getElementById('landing_page');if(l)l.value=location.pathname||'';})();
+</script>
+</body>
+</html>
