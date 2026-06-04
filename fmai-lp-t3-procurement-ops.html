@@ -50,8 +50,10 @@
   .vp .ic{flex:none;width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-top:2px}
   .vp h3{margin-bottom:1px;font-size:1.02rem}
   .vp p{font-size:.93rem;color:var(--body)}
-  .badges{display:flex;gap:18px;margin-top:30px;align-items:center}
-  .badges img{height:84px;width:auto}
+  .badges{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;align-items:center;gap:16px 20px;margin-top:24px}
+  .badges img{height:72px;width:auto;display:block}
+  @media(max-width:880px){.badges{justify-content:center;margin-left:auto;margin-right:auto;gap:14px 18px}.badges img{height:58px}}
+  @media(max-width:420px){.badges{grid-template-columns:repeat(2,auto)}.badges img{height:54px}}
 
   /* HERO ANIMATION PANEL (T3 addition, stays inside the system) */
   .hero-anim{margin:0 0 24px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fbfdff,#f2f6fb);
@@ -309,8 +311,12 @@
           <div><h3>Level every quote, buy the best price</h3><p>AI reads each vendor quote and lines the bids up side by side, so you award the best price instead of re-keying PDFs line by line.</p></div></li>
       </ul>
       <div class="badges">
-        <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/696e029424c75cae7425be44_Field%20Materials%20Best%20Custoemr%20Support%20badge.svg" alt="Software Advice, Best Customer Support">
-        <img src="https://cdn.prod.website-files.com/64b15882d212c06c7bf09feb/696e7749ed9fb259b39bfeec_users-love-us.svg" alt="G2, Users Love Us">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/6a1fec6a1aaf121d154b45b7_ProcuretoPay_HighPerformer_HighPerformer.svg" alt="G2 High Performer">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/6a1fecdabdd0b6f3cf2acc81_ProcuretoPay_EasiestToDoBusinessWith_EaseOfDoingBusinessWith.svg" alt="G2 Easiest to Do Business With">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/6a1fecc442508952dc5b807c_ProcuretoPay_BestSupport_QualityOfSupport.svg" alt="G2 Quality of Support">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/6a1fed048ef297ce60d9abc8_StrategicSourcing_BestRelationship_Mid-Market_Total.svg" alt="G2 Best Relationship, Mid-Market">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/69717e670c14bb7d271ce72c_696e7749ed9fb259b39bfeec_users-love-us.svg" alt="G2 Users Love Us">
+        <img src="https://cdn.prod.website-files.com/64e3bc601a7dcf1cadcf0250/69717e519f3f657974089a0e_696e029424c75cae7425be44_Field%20Materials%20Best%20Custoemr%20Support%20badge.svg" alt="Software Advice, Best Customer Support">
       </div>
     </div>
 
