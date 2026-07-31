@@ -23,4 +23,6 @@
   drop attribution, ordering, rejected options (park or drop).
 - Method lessons about the assistant go to working-style RECENT LESSONS, never here (ONE EVENT,
   TWO RECORDS).
+- Volatile numbers (prices, counts, statuses) live in WORKING.md with a date — never in
+  DECISIONS.md; durable docs point at the source of truth instead.
 - DECISIONS entry template: Decision / Reasons / Provenance line / Open questions. Nothing else.
