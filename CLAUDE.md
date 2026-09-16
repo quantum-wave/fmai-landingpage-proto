@@ -16,8 +16,8 @@
 ## Doc hygiene
 - Durable docs record STATE, not PATH: current facts, ratified decisions, open questions. No
   "this session", no who-suggested-what, no correction history.
-- Superseded before commit = delete. Superseded after commit = new appended entry. Append-only
-  starts at first commit, not first keystroke.
+- Superseded before commit = delete. Superseded after commit = edit the entry in place to state
+  what's now true.
 - Provenance = one dated line per number. No epistemics paragraphs.
 - Intake (meeting notes / transcripts) is a transform: keep decisions, facts, open questions;
   drop attribution, ordering, rejected options (park or drop).
