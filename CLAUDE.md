@@ -24,8 +24,7 @@
 - Provenance = one dated line per number. No epistemics paragraphs.
 - Intake (meeting notes / transcripts) is a transform: keep decisions, facts, open questions;
   drop attribution, ordering, rejected options (park or drop).
-- Method lessons about the assistant go to working-style RECENT LESSONS, never here (ONE EVENT,
-  TWO RECORDS).
+- Method lessons about the assistant go to working-style LESSONS-LOG.md as an `L<n>` entry, with the rule landed at its stub (WORKING-STYLE.md LESSON LANDING), never here (ONE EVENT, TWO RECORDS).
 - Volatile numbers (prices, counts, statuses) live in WORKING.md with a date — never in
   DECISIONS.md; durable docs point at the source of truth instead.
 - DECISIONS entry template: Decision / Reasons / Provenance line / Open questions. Nothing else.
