@@ -17,7 +17,10 @@
 - Durable docs record STATE, not PATH: current facts, ratified decisions, open questions. No
   "this session", no who-suggested-what, no correction history.
 - Superseded before commit = delete. Superseded after commit = edit the entry in place to state
-  what's now true.
+  what's now true — EXCEPT in DECISIONS.md, where a committed entry is immutable: the correction
+  is a new entry, and the old one gets exactly one head-line, `SUPERSEDED IN PART by D<n>:
+  <clause>` (or `SUPERSEDED by D<n>` for a whole-entry replacement). Policy: working-style
+  playbooks/durable-records-playbook.md, DECISIONS.md LEDGER POLICY (D27).
 - Provenance = one dated line per number. No epistemics paragraphs.
 - Intake (meeting notes / transcripts) is a transform: keep decisions, facts, open questions;
   drop attribution, ordering, rejected options (park or drop).
